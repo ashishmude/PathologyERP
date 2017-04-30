@@ -1,5 +1,7 @@
 package com.pathologyerp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,26 @@ public class PathologyController {
 	
 	@RequestMapping("/patients")
 	public ResponseEntity<?> getAllPatients(){
-		System.out.println("On patients page");
-		System.out.println(patientService.findByFirstName("Ashish").getFirstName());
-		return new ResponseEntity<Object>(HttpStatus.OK);
+		List<Patient> patientList = (List<Patient>) patientService.findAll();
+		return new ResponseEntity<List>(patientList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/getPatientDetailsById" , method=RequestMethod.POST, consumes= {"application/json"})
+	public ResponseEntity<?> getPatientDetailsById(@RequestBody int patientId){
+		Patient patient = patientService.findOne(patientId);
+		return new ResponseEntity<Patient>(patient, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/getPatientDetailsByFirstName" , method=RequestMethod.POST, consumes= {"application/json"})
+	public ResponseEntity<?> getPatientDetailsByFirstName(@RequestBody String firstName){
+		List<Patient> patientList = (List<Patient>) patientService.findByFirstName(firstName);
+		return new ResponseEntity<List>(patientList, HttpStatus.OK);
+	}
+
+	@RequestMapping(value="/getPatientDetailsByLastName" , method=RequestMethod.POST, consumes= {"application/json"})
+	public ResponseEntity<?> getPatientDetailsByLastName(@RequestBody String lastName){
+		List<Patient> patientList = (List<Patient>) patientService.findByLastName(lastName);
+		return new ResponseEntity<List>(patientList, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/savePatientDetails", method=RequestMethod.POST, consumes= {"application/json"})
@@ -31,9 +50,9 @@ public class PathologyController {
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
-	@RequestMapping("/tests")
-	public ResponseEntity<?> getAllTests(){
-		System.out.println("On Tests page");
+	@RequestMapping(value="/deletePatient", method=RequestMethod.POST, consumes= {"application/json"})
+	public ResponseEntity<?> deletePatient(@RequestBody int patientId){
+		patientService.delete(patientId);
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
